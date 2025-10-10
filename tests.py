@@ -51,7 +51,7 @@ def test_add_book_valid_input():
     success, message = add_book_to_catalog("Test Book", "Test Author", "9684938294840", 5)
     
     assert success == True
-    assert f'book test book has been successfully added to the catalog.' in message.lower()
+    assert f'book "test book" has been successfully added to the catalog.' in message.lower()
 
 def test_add_book_invalid_isbn_too_short():
     """Test adding a book with ISBN too short."""
@@ -157,9 +157,9 @@ def test_borrow_book_by_patron_6_books():
 def test_borrow_unavailable_book():
     
     #add the book to the database
-    add_book_to_catalog("Test Book 3", "Test Author", "1234567890132", 0)
+    add_book_to_catalog("Test Book 3", "Test Author", "1234597890132", 0)
     #get the book by the ispn 
-    book = get_book_by_isbn("1234567890132")
+    book = get_book_by_isbn("1234597890132")
     success, message = borrow_book_by_patron("123454" , book['id'])
     assert success == False
     assert "This book is currently not available." in message
