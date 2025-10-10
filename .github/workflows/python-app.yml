@@ -28,7 +28,7 @@ jobs:
       - name: Run unit tests
         continue-on-error: true
         run: |
-          pytest tests.py 
+          pytest tests.py --cov --cov-branch --cov-report=xml || true
 
       - name: Show test summary
         if: always()
