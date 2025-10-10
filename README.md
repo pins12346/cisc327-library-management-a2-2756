@@ -49,3 +49,11 @@ See [`student_instructions.md`](student_instructions.md) for complete assignment
 - [Python Blueprint](https://flask.palletsprojects.com/en/stable/blueprints)
 
 
+![Library Database Test](https://github.com/pins12346/cisc327-library-management-a2-2756/actions/workflows/python-app.yml/badge.svg)
+
+[![codecov](https://codecov.io/github/pins12346/cisc327-library-management-a2-2756/graph/badge.svg?token=DT05NW352J)](https://codecov.io/github/pins12346/cisc327-library-management-a2-2756)
+
+
+
+
+
