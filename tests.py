@@ -26,6 +26,10 @@ from database import(
 
 '''
 These tests assume that the database has just been created and the sample data is the only thing in the database
+
+NOTE: The github CI pipeline was giving me issues with the test script being in the test folder so I created a new 
+file in the main directory called tests.py and it contains the same content as test.py in the test folder, I just run 
+tests.py in the CI workflow. I hope this is okay, I tried trouble shooting for a while and couldnt figure it out
 '''
 
 
