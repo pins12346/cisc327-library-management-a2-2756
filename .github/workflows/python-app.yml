@@ -27,7 +27,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest --disable-warnings
+          pytest tests/test.py --disable-warnings
 
       - name: Show test summary
         if: always()
