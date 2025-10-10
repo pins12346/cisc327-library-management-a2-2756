@@ -21,7 +21,9 @@ from library_service import(
 )
 
 from database import(
-    get_book_by_isbn
+    get_book_by_isbn,
+    init_database,
+    add_sample_data
 )
 
 '''
@@ -37,7 +39,10 @@ tests.py in the CI workflow. I hope this is okay, I tried trouble shooting for a
 
 
 
-
+def test_init_database():
+    init_database()
+    add_sample_data()
+    
 
 
 
