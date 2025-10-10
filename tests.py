@@ -39,9 +39,9 @@ tests.py in the CI workflow. I hope this is okay, I tried trouble shooting for a
 
 
 
-#def test_init_database():
- ##   init_database()
-   # add_sample_data()
+def test_init_database():
+    init_database()
+    add_sample_data()
     
 
 

@@ -25,10 +25,6 @@ jobs:
           pip install -r requirements.txt || true
           pip install pytest
 
-      - name: Init Database
-        run: |
-          python -c 'from database.py import init_database; init_database()'
-          python -c 'from database.py import add_sample_data; add_sample_data()'
 
       - name: Run unit tests
         continue-on-error: true
