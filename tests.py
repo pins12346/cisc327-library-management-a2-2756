@@ -48,10 +48,10 @@ def test_init_database():
 
 def test_add_book_valid_input():
     """Test adding a book with valid input."""
-    success, message = add_book_to_catalog("Test Book", "Test Author", "1234567890123", 5)
+    success, message = add_book_to_catalog("Test Book", "Test Author", "9684938294840", 5)
     
     assert success == True
-    assert f'book Test Book has been successfully added to the catalog.' in message.lower()
+    assert f'book test book has been successfully added to the catalog.' in message.lower()
 
 def test_add_book_invalid_isbn_too_short():
     """Test adding a book with ISBN too short."""
@@ -192,9 +192,9 @@ def test_return_book_by_patron_valid_input():
     borrow_book_by_patron("122456", book['id'])
     
     success, message = return_book_by_patron("122456" , book['id'])
-    
+    b = book['title'].lower()
     assert success == True
-    assert f'Successfully returned "{book["title"]}".' in message.lower()
+    assert f'successfully returned "{b}".' in message.lower()
     
 def test_return_book_by_patron_null_book_id():
     """Test ID Null"""
@@ -239,7 +239,7 @@ def test_return_book_by_patron_id_as_string():
     success, message = return_book_by_patron("Test Title", book['id'])
     
     assert success == False
-    assert "Book not found." in message
+    assert "Invalid patron ID. Must be exactly 6 digits" in message
     
 def test_return_book_dne():
     '''Testing returning a book that was not taken out by that patron'''
@@ -249,7 +249,7 @@ def test_return_book_dne():
     #get the book by the ispn 
     book = get_book_by_isbn("1234567898530")
     #borrow the book
-    borrow_book_by_patron("123356", book['id'])
+    #borrow_book_by_patron("123356", book['id'])
     
     success, message = return_book_by_patron("123356", book['id'])
     
@@ -323,7 +323,7 @@ def test_calculate_late_fee_for_book_null_patron_id():
     assert "fee_amount" in list(result.keys()) 
     assert "days_overdue" in list(result.keys())
     assert "status" in list(result.keys())
-    assert "Failed" in result["status"]
+    assert "Invalid patron ID" in result["status"]
     
 
 def test_calculate_late_fee_for_book_ID_book_title():
@@ -343,7 +343,7 @@ def test_calculate_late_fee_for_book_ID_book_title():
     assert "fee_amount" in list(result.keys()) 
     assert "days_overdue" in list(result.keys())
     assert "status" in list(result.keys())
-    assert "Book not found." in result["status"]
+    assert "Invalid patron ID" in result["status"]
     
 
 def test_calculate_late_fee_for_book_no_input():
@@ -352,7 +352,7 @@ def test_calculate_late_fee_for_book_no_input():
     #add the book to the database
     add_book_to_catalog("Test Book", "Test Author", "1234567890119", 5)
     #get the book by the ispn 
-    book = get_book_by_isbn("123456789018")
+    book = get_book_by_isbn("1234567890119")
     #borrow the book
     borrow_book_by_patron("123416", book['id'])
     
@@ -363,7 +363,7 @@ def test_calculate_late_fee_for_book_no_input():
     assert "fee_amount" in list(result.keys()) 
     assert "days_overdue" in list(result.keys())
     assert "status" in list(result.keys())
-    assert "Book not Found." in result["status"]
+    assert "Invalid patron ID" in result["status"]
 
 import datetime
 from database import insert_borrow_record
@@ -403,7 +403,7 @@ def test_search_books_in_catalog_valid_input():
     
     assert isinstance(result, list)
     assert len(result) >= 1
-    assert "Test Book" in result
+    assert "Test Book" in result[0]['title']
     
 def test_search_books_in_catalog_invalid_type():
     """Test Invalid Type Of Search"""
@@ -471,8 +471,8 @@ def test_get_patron_status_report_valid_input():
     assert isinstance(result, dict)
     #Assuming this is what output could look like based on the requirements
     assert "currently_borrowed" in list(result.keys())
-    assert book['title'] in result["currently_borrowed"]["title"]
-    assert "late_fee" in list(result.keys())
+    assert book['title'] in result["currently_borrowed"][0]['title']
+    assert "total_late_fees" in list(result.keys())
     assert "amount_of_books_borrowed" in list(result.keys())
     assert "patron_id" in list(result.keys())
     assert result["patron_id"] == "123056"
@@ -532,7 +532,7 @@ def test_get_patron_status_report_patron_id_nothing_taken_out():
     result = get_patron_status_report("024586")
     assert "currently_borrowed" in list(result.keys())
     assert result["currently_borrowed"] == []
-    assert "late_fee" in list(result.keys())
+    assert "total_late_fees" in list(result.keys())
     assert "amount_of_books_borrowed" in list(result.keys())
     assert "patron_id" in list(result.keys())
     
