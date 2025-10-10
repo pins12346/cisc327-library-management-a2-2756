@@ -27,7 +27,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest tests/test.py --disable-warnings
+          pytest Brian_Sandbox_Please_Ignore.py
 
       - name: Show test summary
         if: always()

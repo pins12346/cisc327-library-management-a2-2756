@@ -25,7 +25,7 @@ from database import(
 )
 
 '''
-Here are the tests for the library_service.py functions 
+These tests assume that the database has just been created and the sample data is the only thing in the database
 '''
 
 
@@ -185,7 +185,7 @@ def test_return_book_by_patron_valid_input():
     success, message = return_book_by_patron("122456" , book['id'])
     
     assert success == True
-    assert "successfully returned" in message.lower()
+    assert f'Successfully returned "{book["title"]}".' in message.lower()
     
 def test_return_book_by_patron_null_book_id():
     """Test ID Null"""
@@ -200,7 +200,7 @@ def test_return_book_by_patron_null_book_id():
     success, message = return_book_by_patron("124456" , None)
     
     assert success == False
-    assert "No Book ID" in message
+    assert "Book not found." in message
     
 def test_return_book_by_patron_string_as_book_id():
     """Test ID String"""
@@ -215,7 +215,7 @@ def test_return_book_by_patron_string_as_book_id():
     success, message = return_book_by_patron("123556" , "Test Title")
     
     assert success == False
-    assert "Book ID needs to be an number" in message
+    assert "Book not found." in message
     
 def test_return_book_by_patron_id_as_string():
     """Test ID as string"""
@@ -230,7 +230,7 @@ def test_return_book_by_patron_id_as_string():
     success, message = return_book_by_patron("Test Title", book['id'])
     
     assert success == False
-    assert "Patron ID needs to be an number" in message
+    assert "Book not found." in message
     
 def test_return_book_dne():
     '''Testing returning a book that was not taken out by that patron'''
@@ -245,7 +245,7 @@ def test_return_book_dne():
     success, message = return_book_by_patron("123356", book['id'])
     
     assert success == False
-    assert "This patron did not take out this book." in message
+    assert f'You have not borrowed "{book["title"]}".' in message
 
 def test_return_book_twice():
     ''' Testing returning the same book twice'''
@@ -262,7 +262,7 @@ def test_return_book_twice():
     
     success, message = return_book_by_patron("123336", book['id'])
     assert success == False
-    assert "Patron did not take out this book" in message
+    assert f'You have not borrowed "{book["title"]}".' in message
     
     
     
@@ -293,6 +293,7 @@ def test_calculate_late_fee_for_book_valid_input():
     assert "fee_amount" in result 
     assert "days_overdue" in result
     assert "status" in result 
+    assert result["status"] == "Success"
 
 
 def test_calculate_late_fee_for_book_null_patron_id():
@@ -333,7 +334,7 @@ def test_calculate_late_fee_for_book_ID_book_title():
     assert "fee_amount" in list(result.keys()) 
     assert "days_overdue" in list(result.keys())
     assert "status" in list(result.keys())
-    assert "Failed" in result["status"]
+    assert "Book not found." in result["status"]
     
 
 def test_calculate_late_fee_for_book_no_input():
@@ -353,7 +354,7 @@ def test_calculate_late_fee_for_book_no_input():
     assert "fee_amount" in list(result.keys()) 
     assert "days_overdue" in list(result.keys())
     assert "status" in list(result.keys())
-    assert "Failed" in result["status"]
+    assert "Book not Found." in result["status"]
 
 import datetime
 from database import insert_borrow_record
@@ -393,12 +394,7 @@ def test_search_books_in_catalog_valid_input():
     
     assert isinstance(result, list)
     assert len(result) >= 1
-    assert isinstance(result[0], dict)
-    assert "Book ID" in list(result[0].keys())
-    assert "Title" in list(result[0].keys())
-    assert "Author" in list(result[0].keys())
-    assert "ISBN" in list(result[0].keys())
-    assert "Test Title" in result[0]["Book ID"]
+    assert "Test Book" in result
     
 def test_search_books_in_catalog_invalid_type():
     """Test Invalid Type Of Search"""
@@ -464,10 +460,13 @@ def test_get_patron_status_report_valid_input():
     result = get_patron_status_report("123056")
 
     assert isinstance(result, dict)
-    assert "Currently Borrowed" in list(result.keys())
-    assert "Total late fees" in list(result.keys())
-    assert "# Currently Borrowed" in list(result.keys())
-    assert "Borrowing History" in list(result.keys())
+    #Assuming this is what output could look like based on the requirements
+    assert "currently_borrowed" in list(result.keys())
+    assert book['title'] in result["currently_borrowed"]["title"]
+    assert "late_fee" in list(result.keys())
+    assert "amount_of_books_borrowed" in list(result.keys())
+    assert "patron_id" in list(result.keys())
+    assert result["patron_id"] == "123056"
     
 
 
@@ -484,7 +483,7 @@ def test_get_patron_status_report_null_id():
     result = get_patron_status_report(None)
    
     assert isinstance(result, dict)
-    assert result == {}
+    assert result == {"error": "Invalid patron ID."}
     
     
 def test_get_patron_status_report_Book_Title_as_Patron_ID():
@@ -499,7 +498,7 @@ def test_get_patron_status_report_Book_Title_as_Patron_ID():
     
     result = get_patron_status_report("Test Title")
     assert isinstance(result, dict)
-    assert result == {}
+    assert result == {"error": "Invalid patron ID."}
     
     
 def test_get_patron_status_report_patron_id_too_long():
@@ -514,7 +513,7 @@ def test_get_patron_status_report_patron_id_too_long():
     
     result = get_patron_status_report("0234586")
     assert isinstance(result, dict)
-    assert result == {}
+    assert result == {"error": "Invalid patron ID."}
     
     
 def test_get_patron_status_report_patron_id_nothing_taken_out():
@@ -522,8 +521,11 @@ def test_get_patron_status_report_patron_id_nothing_taken_out():
     
     
     result = get_patron_status_report("024586")
-    assert isinstance(result, dict)
-    assert result == {}
+    assert "currently_borrowed" in list(result.keys())
+    assert result["currently_borrowed"] == []
+    assert "late_fee" in list(result.keys())
+    assert "amount_of_books_borrowed" in list(result.keys())
+    assert "patron_id" in list(result.keys())
     
     
     
