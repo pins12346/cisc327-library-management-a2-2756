@@ -1,26 +1,27 @@
 import pytest
-from library_service import (
+
+from services.library_service import (
     add_book_to_catalog
 )
-from library_service import(
+from services.library_service import(
     borrow_book_by_patron
 )
-from library_service import(
+from services.library_service import(
     return_book_by_patron
 )
-from library_service import(
+from services.library_service import(
     calculate_late_fee_for_book
 )
 
-from library_service import(
+from services.library_service import(
     search_books_in_catalog
 )
 
-from library_service import(
+from services.library_service import(
     get_patron_status_report
 )
 
-from database import(
+from services.database import(
     get_book_by_isbn,
     init_database,
     add_sample_data
@@ -48,10 +49,10 @@ def test_init_database():
 
 def test_add_book_valid_input():
     """Test adding a book with valid input."""
-    success, message = add_book_to_catalog("Test Book", "Test Author", "9684938294840", 5)
+    success, message = add_book_to_catalog("Test Boook", "Test Auuthor", "9604293829840", 3)
     
     assert success == True
-    assert f'book "test book" has been successfully added to the catalog.' in message.lower()
+    assert f'book "test boook" has been successfully added to the catalog.' in message.lower()
 
 def test_add_book_invalid_isbn_too_short():
     """Test adding a book with ISBN too short."""
@@ -97,10 +98,10 @@ def test_add_book_not_valid_copies():
 def test_borrow_book_by_patron_valid_input():
     """Test Proper Input"""
     #add the book to the database
-    add_book_to_catalog("Test Book", "Test Author", "1234567890179", 5)
+    add_book_to_catalog("Test Book", "Test Author", "9604293829840", 5)
     #get the book by the ispn
-    book = get_book_by_isbn("1234567890179")
-    success, message = borrow_book_by_patron("123456", book['id'])
+    book = get_book_by_isbn("9604293829840")
+    success, message = borrow_book_by_patron("313150", book['id'])
     print(message)
     assert success == True
     assert "successfully borrowed" in message.lower()
@@ -367,7 +368,7 @@ def test_calculate_late_fee_for_book_no_input():
     assert "Invalid patron ID" in result["status"]
 
 import datetime
-from database import insert_borrow_record
+from services.database import insert_borrow_record
     
 def test_calculate_fee_overdue_cap():
     ''' Test the limit of 15 dollars on the late fee'''
