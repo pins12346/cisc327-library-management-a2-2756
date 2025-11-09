@@ -30,7 +30,7 @@ def test_successful_payment():
     )
 
     assert success is True
-    assert "Payment successful" in message or "Payment OK" in message or txn == "txn_123"
+    assert "processed successfully" in message or txn == "txn_123"
 
 #Payment Declined Test  
 def test_payment_declined():
@@ -58,7 +58,7 @@ def test_invalid_patron_id():
     mock.process_payment.assert_not_called()
     assert success is False
     assert txn is None
-    assert "Invalid patron ID" in message
+    assert "Invalid patron ID. Must be exactly 6 digits." in message
 
 #Test Zero Late Fee 
 def test_zero_late_fee():
@@ -69,7 +69,7 @@ def test_zero_late_fee():
     mock.process_payment.assert_not_called()
     assert success is False
     assert txn is None
-    assert "No late fees to pay" in message
+    assert "No late fees to pay for this book." in message
 
 #Test Network Error 
 def test_network_error():
@@ -117,4 +117,4 @@ def test_invalid_refund_amounts():
         success, message = refund_late_fee_payment("txn_abc", amount, mock)
         mock.refund_payment.assert_not_called()
         assert success is False
-        assert ("Invalid refund amount" in message) or ("exceeds maximum late fee" in message) or ("Refund amount must be greater than 0" in message)
+        assert ("Refund amount exceeds maximum late fee." in message) or ("Refund amount must be greater than 0." in message)

@@ -36,21 +36,21 @@ def test_add_book_duplicate_isbn():
     stub_existing_book()
     success, msg = library_service.add_book_to_catalog("Book", "Author", "1234567890123", 5)
     assert success is False 
-    assert "already exists" in msg
+    assert "A book with this ISBN already exists." in msg
 
 def test_add_book_db_error():
     stub_non_existing_book()
     stub_insert_book(False)
     success, msg = library_service.add_book_to_catalog("Book", "Author", "1234567890123", 5)
     assert success is False 
-    assert "Database error" in msg
+    assert "Database error occurred while adding the book." in msg
 
 def test_add_book_success():
     stub_non_existing_book()
     stub_insert_book(True)
     success, msg = library_service.add_book_to_catalog("Book", "Author", "1234567890123", 5)
     assert success is True 
-    assert "successfully added" in msg
+    assert f'book "book" has been successfully added to the catalog.' in msg.lower()
 
 
 # Tests for borrow_book_by_patron
@@ -61,7 +61,7 @@ def test_borrow_insert_error():
     patch("services.library_service.insert_borrow_record", return_value=False).start()
     success, msg = library_service.borrow_book_by_patron("123456", 1)
     assert success is False 
-    assert "creating borrow record" in msg
+    assert "Database error occurred while creating borrow record." in msg
 
 def test_borrow_update_error():
     stub_get_book({"id": 1, "title": "Book", "available_copies": 1})
@@ -70,7 +70,7 @@ def test_borrow_update_error():
     patch("services.library_service.update_book_availability", return_value=False).start()
     success, msg = library_service.borrow_book_by_patron("123456", 1)
     assert success is False 
-    assert "updating book availability" in msg
+    assert "Database error occurred while updating book availability." in msg
 
 # Tests for return_book_by_patron
 
@@ -84,7 +84,7 @@ def test_return_db_error():
     patch("services.library_service.update_book_availability", return_value=True).start()
     success, msg = library_service.return_book_by_patron("123456", 1)
     assert success is False 
-    assert "processing return" in msg
+    assert "Database error occurred while processing return." in msg
 
 def test_return_success_with_fee():
     stub_get_book({"id": 1, "title": "Book"})
@@ -108,25 +108,25 @@ def test_process_payment_invalid_amount_zero():
     gateway = PaymentGateway()
     success, txn, msg = gateway.process_payment("123456", 0)
     assert success is False
-    assert "Invalid amount" in msg
+    assert "Invalid amount: must be greater than 0" in msg
 
 def test_process_payment_invalid_amount_negative():
     gateway = PaymentGateway()
     success, txn, msg = gateway.process_payment("123456", -5.0)
     assert success is False
-    assert "Invalid amount" in msg
+    assert "Invalid amount: must be greater than 0" in msg
 
 def test_process_payment_amount_exceeds_limit():
     gateway = PaymentGateway()
     success, txn, msg = gateway.process_payment("123456", 1500.0)
     assert success is False
-    assert "exceeds limit" in msg
+    assert "Payment declined: amount exceeds limit" in msg
 
 def test_process_payment_invalid_patron_id_length():
     gateway = PaymentGateway()
     success, txn, msg = gateway.process_payment("123", 10.0)
     assert success is False
-    assert "Invalid patron ID" in msg
+    assert "Invalid patron ID format" in msg
 
 # Refund payment tests 
 
