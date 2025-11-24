@@ -77,7 +77,7 @@ def test_borrow_book():
     #After it reloads, we query the page again to verify book ID exists
     new_book_input = page.query_selector("input[name='book_id']")
     if new_book_input is None:
-        print("Borrow successful - book input not found on catalog page (expected if unavailable)")
+        print("Borrow successful: Book input not found on catalog page")
     else:
         book_id = new_book_input.get_attribute("value")
         print(f"Book {book_id} still in catalog")
